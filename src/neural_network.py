@@ -2,9 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import pickle
+import torch
 from activation import Activation
 from derivative import Derivative
+from dropout import Dropout
 from scipy.stats import truncnorm
+
 
 class NeuralNetwork:
     # intialization method (constructor)
@@ -41,7 +44,8 @@ class NeuralNetwork:
         rad = 1 / np.sqrt(self.no_of_hidden_nodes)
         X = self.truncated_normal(mean=0, sd=1, low=-rad, upp=rad)
         self.weights_hidden_output = X.rvs((self.no_of_out_nodes, self.no_of_hidden_nodes))
-        
+
+      
     def train_single(self, input_vector, target_vector):
         """
         input_vector and target_vector can be tuple, 
@@ -53,19 +57,25 @@ class NeuralNetwork:
         
         output_vector1 = np.dot(self.weights_in_hidden, input_vector)
         output_hidden = Activation.reLU(output_vector1)
-        
+        output_hidden *= Dropout.get_mask(output_vector1)
         output_vector2 = np.dot(self.weights_hidden_output, output_hidden)
-        #output_network = Activation.sigmoid(output_vector2)
         output_network = Activation.reLU(output_vector2)
-
+        output_network *= Dropout.get_mask(output_vector2)
         output_errors = target_vector - output_network
         # update the weights:
         #tmp = output_errors * Derivative.sigmoid(output_network)
-        tmp = output_errors * Derivative.reLU(output_network)     
-        tmp = self.learning_rate  * np.dot(tmp, output_hidden.T)
-        self.weights_hidden_output += tmp
+        try:
+            tmp = output_errors * Derivative.reLU(output_network)
+            tmp = self.learning_rate  * np.dot(tmp, output_hidden.T)
+            self.weights_hidden_output += tmp 
+        except:
+            print("Something went wrong when writing to the file")
+
         # calculate hidden errors:
-        hidden_errors = np.dot(self.weights_hidden_output.T, output_errors)
+        try:
+            hidden_errors = np.dot(self.weights_hidden_output.T, output_errors)
+        except:
+            print("Something went wrong when writing to the file")
         # ----------------------------------------------------------------------
         # update the weights:
         tmp = hidden_errors * Derivative.reLU(output_hidden)
@@ -88,7 +98,7 @@ class NeuralNetwork:
 
  # Code for testing       
     
-    def run(self, input_vector):
+    def predict(self, input_vector):
         # input_vector can be tuple, list or ndarray
         input_vector = np.array(input_vector, ndmin=2).T
         # 1st layer
@@ -104,7 +114,7 @@ class NeuralNetwork:
     def confusion_matrix(self, data_array, labels):
         cm = np.zeros((10, 10), int)
         for i in range(len(data_array)):
-            res = self.run(data_array[i])
+            res = self.predict(data_array[i])
             res_max = res.argmax()
             target = labels[i][0]
             cm[res_max, int(target)] += 1
@@ -122,7 +132,7 @@ class NeuralNetwork:
     def evaluate(self, data, labels):
         corrects, wrongs = 0, 0
         for i in range(len(data)):
-            res = self.run(data[i])
+            res = self.predict(data[i])
             res_max = res.argmax()
             if res_max == labels[i]:
                 corrects += 1

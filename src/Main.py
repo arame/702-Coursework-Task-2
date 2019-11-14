@@ -61,40 +61,39 @@ test_labels_one_hot[test_labels_one_hot==1] = 0.99
 epochs = 10
 learning_rate = 0.001
 #**************************************************
-#ANN = NeuralNetwork(no_of_in_nodes = image_pixels, 
-#                               no_of_out_nodes = 10, 
-#                               no_of_hidden_nodes = 100,
-#                               learning_rate = learning_rate)
+ANN = NeuralNetwork(no_of_in_nodes = image_pixels, 
+                               no_of_out_nodes = 10, 
+                               no_of_hidden_nodes = 100,
+                               learning_rate = learning_rate)
     
-    
- 
-#weights = ANN.train(train_imgs, 
-#                    train_labels_one_hot, 
-#                    epochs=epochs, 
-#                    intermediate_results=True)
-
 print("---------------------------------------------------------")
 print("Training")
-print("---------------------------------------------------------")
-#for i in range(epochs):  
-#    ANN.weights_in_hidden = weights[i][0]
-#    ANN.weights_hidden_output = weights[i][1] 
-#    print("---------------------------------------------------------")
-#    print("epoch: ", i + 1)
-  
-#    corrects, wrongs = ANN.evaluate(train_imgs, train_labels)
-#    print("accuracy train: ", corrects / ( corrects + wrongs))
-#    corrects, wrongs = ANN.evaluate(test_imgs, test_labels)
-#    print("accuracy: test", corrects / ( corrects + wrongs))
+print("---------------------------------------------------------")    
+ 
+weights = ANN.train(train_imgs, 
+                    train_labels_one_hot, 
+                    epochs=epochs, 
+                    intermediate_results=True)
 
 print("---------------------------------------------------------")
 print("Testing")
 print("---------------------------------------------------------")
+for i in range(epochs):  
+    ANN.weights_in_hidden = weights[i][0]
+    ANN.weights_hidden_output = weights[i][1] 
+    print("---------------------------------------------------------")
+    print("epoch: ", i + 1)
+  
+    corrects, wrongs = ANN.evaluate(train_imgs, train_labels)
+    print("accuracy train: ", corrects / ( corrects + wrongs))
+    corrects, wrongs = ANN.evaluate(test_imgs, test_labels)
+    print("accuracy: test", corrects / ( corrects + wrongs))
+
 print("Confusion Matrix:")
-#cm = ANN.confusion_matrix(train_imgs, train_labels)
-#print(cm)
-#for i in range(epochs):
- #   print("digit: ", i, "precision: ", ANN.precision(i, cm), "recall: ", ANN.recall(i, cm))
+cm = ANN.confusion_matrix(train_imgs, train_labels)
+print(cm)
+for i in range(epochs):
+    print("digit: ", i, "precision: ", ANN.precision(i, cm), "recall: ", ANN.recall(i, cm))
     
 print("---------------------------------------------------------")
 t = LocalTime()
