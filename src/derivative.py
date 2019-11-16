@@ -7,18 +7,18 @@ class Derivative:
     
     @staticmethod
     def reLU(arr):
-        #print("arr = ", arr)
-        #return np.where(arr <= 0, 0, 1)
-        for i in range(len(arr)):
-            item = np.float64(arr[i])
-            if not isinstance(item, float):
-                raise TypeError("Only floats are allowed")
+        arr1 = np.where(arr <= 0, 0, 1)
+        return arr1
+        #for i in range(len(arr)):
+        #    item = np.float64(arr[i])
+        #    if not isinstance(item, float):
+        #        raise TypeError("Only floats are allowed")
             #number = Derivative.check_number(arr[i])
-            if item <= 0:
-                arr[i] = 0
-            else:
-                arr[i] = 1
-        return arr
+        #    if item <= 0:
+        #        arr[i] = 0
+        #    else:
+        #        arr[i] = 1
+        #return arr
 
     @staticmethod
     def check_number(item):

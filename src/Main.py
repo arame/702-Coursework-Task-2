@@ -15,9 +15,8 @@ print("*********************************************************")
 print("** Start at ", t.localtime)
 print("*********************************************************")
 
-temp = torch.cuda.is_available()
-print(temp)
-print(torch.__version__)
+print("Cuda is available; ", torch.cuda.is_available())
+print("Torch version;     ", torch.__version__)
 
 image_size = 28 # width and height
 no_of_different_labels = 10 #  i.e. 0, 1, 2, 3, ..., 9
@@ -29,22 +28,24 @@ with open(os.path.join(".", f.file_path), "br") as fh:
     data = pickle.load(fh)
 t = LocalTime()
 print("File successufully read at ", t.localtime)
-train_imgs = torch.Tensor(data[0])
-test_imgs = torch.Tensor(data[1])
-train_labels = torch.Tensor(data[2])
-test_labels = torch.Tensor(data[3])
-train_labels_one_hot = torch.Tensor(data[4])
-test_labels_one_hot = torch.Tensor(data[5])
+train_imgs = data[0]
+test_imgs = data[1]
+train_labels = data[2]
+test_labels = data[3]
+train_labels_one_hot = data[4]
+test_labels_one_hot = data[5]
 t = LocalTime()
-print("File successufully loaded at ", t.localtime)
+print("File successufully loaded at ", t.localtime)444444444444444
 image_size = 28 # width and length
 no_of_different_labels = 10 #  i.e. 0, 1, 2, 3, ..., 9
 image_pixels = image_size * image_size
 
-#lr = np.arange(no_of_different_labels)
+lr = np.arange(no_of_different_labels)
 # transform labels into one hot representation
-train_labels_one_hot = (train_labels).type(torch.FloatTensor)
-test_labels_one_hot = (test_labels).type(torch.FloatTensor)
+train_labels_one_hot = (lr==train_labels).astype(np.float)
+test_labels_one_hot = (lr==test_labels).astype(np.float)
+#train_labels_one_hot = (train_labels).type(torch.FloatTensor)
+#test_labels_one_hot = (test_labels).type(torch.FloatTensor)
 # we don't want zeroes and ones in the labels neither:
 train_labels_one_hot[train_labels_one_hot==0] = 0.01
 train_labels_one_hot[train_labels_one_hot==1] = 0.99

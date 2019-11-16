@@ -35,13 +35,13 @@ class NeuralNetwork:
         A method to initialize the weight 
         matrices of the neural network
         """
-        rad = 1 / np.sqrt(self.no_of_in_nodes)
+        rad = 2 / np.sqrt(self.no_of_in_nodes)
         X = self.truncated_normal(mean=0, 
                              sd=1, 
                              low=-rad, 
                              upp=rad)
         self.weights_in_hidden = X.rvs((self.no_of_hidden_nodes, self.no_of_in_nodes))
-        rad = 1 / np.sqrt(self.no_of_hidden_nodes)
+        rad = 2 / np.sqrt(self.no_of_hidden_nodes)
         X = self.truncated_normal(mean=0, sd=1, low=-rad, upp=rad)
         self.weights_hidden_output = X.rvs((self.no_of_out_nodes, self.no_of_hidden_nodes))
 
@@ -57,10 +57,12 @@ class NeuralNetwork:
         
         output_vector1 = np.dot(self.weights_in_hidden, input_vector)
         output_hidden = Activation.reLU(output_vector1)
-        output_hidden *= Dropout.get_mask(output_vector1)
+        dropout_mask1 = Dropout.get_mask(output_vector1)
+        output_hidden *= dropout_mask1
         output_vector2 = np.dot(self.weights_hidden_output, output_hidden)
         output_network = Activation.reLU(output_vector2)
-        output_network *= Dropout.get_mask(output_vector2)
+        dropout_mask2 = Dropout.get_mask(output_vector2)
+        output_network *= dropout_mask2
         output_errors = target_vector - output_network
         # update the weights:
         #tmp = output_errors * Derivative.sigmoid(output_network)
@@ -78,7 +80,8 @@ class NeuralNetwork:
             print("Something went wrong when writing to the file")
         # ----------------------------------------------------------------------
         # update the weights:
-        tmp = hidden_errors * Derivative.reLU(output_hidden)
+        tmp1 = Derivative.reLU(output_hidden)
+        tmp = hidden_errors * tmp1
         # -----------------------------------------------------------------------
         self.weights_in_hidden += self.learning_rate * np.dot(tmp, input_vector.T)
         
