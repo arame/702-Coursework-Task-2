@@ -57,12 +57,10 @@ class NeuralNetwork:
         
         output_vector1 = np.dot(self.weights_in_hidden, input_vector)
         output_hidden = Activation.reLU(output_vector1)
-        dropout_mask1 = Dropout.get_mask(output_vector1)
-        output_hidden *= dropout_mask1
+        output_hidden *= Dropout.get_mask(output_vector1)
         output_vector2 = np.dot(self.weights_hidden_output, output_hidden)
         output_network = Activation.reLU(output_vector2)
-        dropout_mask2 = Dropout.get_mask(output_vector2)
-        output_network *= dropout_mask2
+        output_network *= Dropout.get_mask(output_vector2)
         output_errors = target_vector - output_network
         # update the weights:
         #tmp = output_errors * Derivative.sigmoid(output_network)
@@ -88,8 +86,10 @@ class NeuralNetwork:
     def train(self, data_array, 
               labels_one_hot_array,
               epochs=1,
+              dropout_rate=0.5,
               intermediate_results=False):
         intermediate_weights = []
+        Dropout.filter_percentage = dropout_rate
         for _ in range(epochs):  
             print("*", end="")
             for i in range(len(data_array)):

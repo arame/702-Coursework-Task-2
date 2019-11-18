@@ -1,7 +1,7 @@
 import numpy as np
 
 class Dropout:
-    filter_percentage = 0.2     # ie 20%  dropout
+    filter_percentage = 0.5
 
     @staticmethod
     def get_mask(x):
