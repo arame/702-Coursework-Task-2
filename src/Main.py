@@ -6,14 +6,13 @@ import os
 import pickle
 from scipy.stats import truncnorm
 from files import Files
-from local_time import LocalTime
+from local_time import Localtime
 from neural_network import NeuralNetwork
 import torch
 
-t = LocalTime()
-print("*********************************************************")
-print("** Start at ", t.localtime)
-print("*********************************************************")
+print("*"*100)
+print("** Start at ", Localtime.get())
+print("*"*100)
 
 print("Cuda is available; ", torch.cuda.is_available())
 print("Torch version;     ", torch.__version__)
@@ -21,21 +20,18 @@ print("Torch version;     ", torch.__version__)
 image_size = 28 # width and height
 no_of_different_labels = 10 #  i.e. 0, 1, 2, 3, ..., 9
 image_pixels = image_size * image_size
-t = LocalTime()
-print("Load file at ", t.localtime)
+print("Load file at ", Localtime.get())
 f = Files("pickled_mnist.pkl")
 with open(os.path.join(".", f.file_path), "br") as fh:
     data = pickle.load(fh)
-t = LocalTime()
-print("File successufully read at ", t.localtime)
+print("File successufully read at ", Localtime.get())
 train_imgs = data[0]
 test_imgs = data[1]
 train_labels = data[2]
 test_labels = data[3]
 train_labels_one_hot = data[4]
 test_labels_one_hot = data[5]
-t = LocalTime()
-print("File successufully loaded at ", t.localtime)
+print("File successufully loaded at ", Localtime.get())
 image_size = 28 # width and length
 no_of_different_labels = 10 #  i.e. 0, 1, 2, 3, ..., 9
 image_pixels = image_size * image_size
@@ -65,9 +61,9 @@ for i in range(5):
                                 no_of_hidden_nodes = 100,
                                 learning_rate = learning_rate)
         
-    print("---------------------------------------------------------")
+    print("-"*100)
     print("Training for dropout rate", dropout_rate)
-    print("---------------------------------------------------------")    
+    print("-"*100)    
     
     weights = ANN.train(train_imgs, 
                         train_labels_one_hot, 
@@ -75,13 +71,13 @@ for i in range(5):
                         dropout_rate = dropout_rate,
                         intermediate_results=True)
 
-    print("---------------------------------------------------------")
+    print("-"*100)
     print("Testing for dropout rate", dropout_rate)
-    print("---------------------------------------------------------")
+    print("-"*100)
     for i in range(epochs):  
         ANN.weights_in_hidden = weights[i][0]
         ANN.weights_hidden_output = weights[i][1] 
-        print("---------------------------------------------------------")
+        print("-"*100)
         print("epoch: ", i + 1)
     
         corrects, wrongs = ANN.evaluate(train_imgs, train_labels)
@@ -94,12 +90,10 @@ for i in range(5):
     print(cm)
     for i in range(epochs):
         print("digit: ", i, "precision: ", ANN.precision(i, cm), "recall: ", ANN.recall(i, cm))
-    print("---------------------------------------------------------")
-    t = LocalTime()
+    print("-"*100)
     print("** End for dropout rate ", dropout_rate)
-    print("** At time ", t.localtime)
-    print("---------------------------------------------------------")
-t = LocalTime()
-print("*********************************************************")
-print("** End at ", t.localtime)
-print("*********************************************************")
+    print("** At time ", Localtime.get())
+    print("-"*100)
+print("*"*100)
+print("** End at ", Localtime.get())
+print("*"*100)
